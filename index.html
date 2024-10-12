@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DuckDB-wasm SQL Editor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        #csvFile {
+          margin-bottom: 10px;
+          display: block;
+        }
+        #editor {
+          width: 100%;
+          height: 200px;
+          margin-bottom: 10px;
+        }
+        #runQuery {
+          display: block;
+          margin-bottom: 10px;
+          padding: 5px 10px;
+          font-size: 16px;
+        }
+        #result {
+          white-space: pre-wrap;
+          background-color: #f0f0f0;
+          padding: 10px;
+          border-radius: 5px;
+          overflow-x: auto;
+        }
+      </style>
+  </head>
+  <body>
+    <input type="file" id="csvFile" accept=".csv">
+    <div id="editor"></div>
+    <button id="runQuery">Run Query</button>
+    <div id="result"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/sql-hint.min.js"></script>
+
+    <script>
+      const getDb = async () => {
+        const duckdb = window.duckdbduckdbWasm;
+        // @ts-ignore
+        if (window._db) return window._db;
+        const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
+
+        // Select a bundle based on browser checks
+        const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
+
+        const worker_url = URL.createObjectURL(
+          new Blob([`importScripts("${bundle.mainWorker}");`], {
+            type: "text/javascript",
+          })
+        );
+
+        // Instantiate the asynchronus version of DuckDB-wasm
+        const worker = new Worker(worker_url);
+        // const logger = null //new duckdb.ConsoleLogger();
+        const logger = new duckdb.ConsoleLogger();
+        const db = new duckdb.AsyncDuckDB(logger, worker);
+        await db.instantiate(bundle.mainModule, bundle.pthreadWorker);
+        URL.revokeObjectURL(worker_url);
+        window._db = db;
+        return db;
+      };
+
+    </script>
+    <script type="module">
+        import * as duckdbduckdbWasm from "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.1-dev106.0/+esm";
+        window.duckdbduckdbWasm = duckdbduckdbWasm;
+
+        let db, conn;
+        let editor;
+  
+        async function initializeDB() {
+          db = await getDb();
+          conn = await db.connect();
+        }
+  
+        function initializeCodeMirror() {
+          editor = CodeMirror(document.getElementById("editor"), {
+            mode: "text/x-sql",
+            theme: "monokai",
+            lineNumbers: true,
+            extraKeys: {"Ctrl-Space": "autocomplete"}
+          });
+          editor.setValue("SELECT * FROM csv_data LIMIT 10;");
+        }
+  
+        async function loadCSV(file) {
+          try {
+            // Register the file with DuckDB
+            await db.registerFileHandle(file.name, file, duckdbduckdbWasm.DuckDBDataProtocol.BROWSER_FILEREADER, true);
+            
+            // Create a table from the CSV file
+            await conn.query(`CREATE TABLE csv_data AS SELECT * FROM read_csv_auto('${file.name}')`);
+            console.log("CSV data loaded into 'csv_data' table");
+            document.getElementById("result").textContent = "CSV file loaded successfully. You can now run queries on the 'csv_data' table.";
+          } catch (error) {
+            console.error("Error loading CSV:", error);
+            document.getElementById("result").textContent = `Error loading CSV: ${error.message}`;
+          }
+        }
+  
+        async function runQuery() {
+            const query = editor.getValue();
+            try {
+                const result = await conn.query(query);
+                const rows = result.toArray();
+                
+                // Function to safely convert DuckDB types to JSON-serializable types
+                const convertToSerializable = (value) => {
+                if (typeof value === 'bigint') {
+                    return value.toString();
+                } else if (value instanceof Date) {
+                    return value.toISOString();
+                } else if (ArrayBuffer.isView(value)) {
+                    return Array.from(value);
+                } else if (value === null || value === undefined) {
+                    return null;
+                }
+                return value;
+                };
+
+                // Convert each row
+                const serializableRows = rows.map(row => 
+                Object.fromEntries(
+                    Object.entries(row).map(([key, value]) => [key, convertToSerializable(value)])
+                )
+                );
+
+                document.getElementById("result").textContent = JSON.stringify(serializableRows, null, 2);
+            } catch (error) {
+                document.getElementById("result").textContent = `Error: ${error.message}`;
+            }
+        }
+
+  
+        document.addEventListener("DOMContentLoaded", async () => {
+          await initializeDB();
+          initializeCodeMirror();
+  
+          document.getElementById("csvFile").addEventListener("change", (e) => {
+            loadCSV(e.target.files[0]);
+          });
+  
+          document.getElementById("runQuery").addEventListener("click", runQuery);
+        });
+      </script>
+  </body>
+</html>
