@@ -3,51 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DuckDB-wasm SQL Editor</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
-    <style>
-        body {
-          font-family: Arial, sans-serif;
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 20px;
-        }
-        #csvFile {
-          margin-bottom: 10px;
-          display: block;
-        }
-        #editor {
-          width: 100%;
-          margin-bottom: 10px;
-        }
-        #runQuery {
-          display: block;
-          margin-bottom: 10px;
-          padding: 5px 10px;
-          font-size: 16px;
-        }
-        #result {
-          white-space: pre-wrap;
-          background-color: #f0f0f0;
-          padding: 10px;
-          border-radius: 5px;
-          overflow-x: auto;
-        }
-      </style>
+    <title>DuckDB-wasm SQL Editor with React Flow</title>
   </head>
   <body>
-    <input type="file" id="csvFile" accept=".csv">
-    <div id="editor"></div>
-    <button id="runQuery">Run Query</button>
-    <div id="result"></div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/sql-hint.min.js"></script>
-
-    <script src="duckdb-setup.js"></script>
-    <script type="module" src="main.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

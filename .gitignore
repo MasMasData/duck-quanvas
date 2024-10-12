@@ -1,7 +1,63 @@
-# Created by https://www.toptal.com/developers/gitignore/api/js
-# Edit at https://www.toptal.com/developers/gitignore?templates=js
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-#!! ERROR: js is undefined. Use list command to see defined gitignore types !!#
+# Dependencies
+node_modules
+.pnpm-store
 
-# End of https://www.toptal.com/developers/gitignore/api/js
-n
+# Build outputs
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Testing
+coverage
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# DuckDB WASM files (if you're copying them to public)
+public/duckdb-*.js
+public/duckdb-*.wasm
+
+# Vite
+.vite
+
+# pnpm
+pnpm-lock.yaml
+
+# TypeScript
+*.tsbuildinfo

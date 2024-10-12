@@ -1,0 +1,30 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .react-flow__node-fileUpload,
+.react-flow__node-editor,
+.react-flow__node-chart {
+  font-size: 12px;
+  /* background: white; */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  /* text-align: center; */
+}
+
+.react-flow__node-fileUpload {
+  background: #e6f7ff;
+}
+
+.react-flow__node-editor {
+  background: #fff7e6;
+}
+
+.react-flow__node-chart {
+  background: #f6ffed;
+}
