@@ -14,16 +14,20 @@ import * as duckdb from '@duckdb/duckdb-wasm';
 
 let db, conn;
 
+function getBasePath() {
+  return import.meta.env.BASE_URL;
+}
 
 async function initializeDB() {
+  const basePath = getBasePath();
   const MANUAL_BUNDLES = {
     mvp: {
-      mainModule: '/duckdb-mvp.wasm',
-      mainWorker: '/duckdb-browser-mvp.worker.js',
+      mainModule: `${basePath}duckdb-mvp.wasm`,
+      mainWorker: `${basePath}duckdb-browser-mvp.worker.js`,
     },
     eh: {
-      mainModule: '/duckdb-eh.wasm',
-      mainWorker: '/duckdb-browser-eh.worker.js',
+      mainModule: `${basePath}duckdb-eh.wasm`,
+      mainWorker: `${basePath}duckdb-browser-eh.worker.js`,
     },
   };
 

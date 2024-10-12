@@ -5,6 +5,7 @@
   "main": "index.js",
   "private": true,
   "type": "module",
+  "homepage": "https://masmasdata.github.io/duck-quanvas",
   "scripts": {
     "copy-duckdb": "node scripts/copyDuckDBFiles.cjs",
     "dev": "pnpm run copy-duckdb && vite",
