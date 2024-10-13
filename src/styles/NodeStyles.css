@@ -1,0 +1,75 @@
+/* NodeStyles.css */
+
+.node-table-container {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
+  
+  .node-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+  }
+  
+  .node-table th,
+  .node-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .node-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    color: #333;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .node-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .node-table tbody tr:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .node-button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+  }
+  
+  .node-button:hover {
+    background-color: #45a049;
+  }
+  
+  .node-button:active {
+    background-color: #3e8e41;
+  }
+  
+  .generic-node {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .node-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  

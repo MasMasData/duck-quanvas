@@ -1,42 +1,69 @@
-import React, { useEffect, useRef } from 'react';
-import { Handle } from 'reactflow';
-import CodeMirror from 'codemirror';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/monokai.css';
-import 'codemirror/mode/sql/sql';
-import 'codemirror/addon/hint/show-hint';
-import 'codemirror/addon/hint/sql-hint';
+import React from 'react';
+import GenericNode from './GenericNode';
+import Editor from "@monaco-editor/react";
 
 const EditorNode = ({ data }) => {
-  const editorRef = useRef(null);
-  const cmRef = useRef(null);
-
-  useEffect(() => {
-    if (editorRef.current && !cmRef.current) {
-      cmRef.current = CodeMirror(editorRef.current, {
-        mode: "text/x-sql",
-        theme: "monokai",
-        lineNumbers: true,
-        extraKeys: {"Ctrl-Space": "autocomplete"}
-      });
-      cmRef.current.setValue("SELECT * FROM csv_data LIMIT 10;");
-    }
-  }, []);
+  const handleEditorDidMount = (editor, monaco) => {
+    // You can customize the editor here
+  };
 
   const handleRunQuery = () => {
-    const query = cmRef.current.getValue();
-    data.onRunQuery(query);
+    if (data.editorRef.current) {
+      const query = data.editorRef.current.getValue();
+      data.onRunQuery(query);
+    }
+  };
+
+  const renderTable = (result) => {
+    if (!result || result.length === 0) return null;
+
+    const headers = Object.keys(result[0]);
+
+    return (
+      <div className="node-table-container">
+        <table className="node-table">
+          <thead>
+            <tr>
+              {headers.map((header, index) => (
+                <th key={index}>{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {result.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {headers.map((header, cellIndex) => (
+                  <td key={cellIndex}>{row[header]}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   return (
-    <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px', background: 'white' }}>
-      <Handle type="target" position="top" id="a" />
-      <div>{data.label}</div>
-      <div ref={editorRef} style={{ marginBottom: '10px' }}></div>
-      <button onClick={handleRunQuery}>Run Query</button>
-      <div style={{ marginTop: '10px', maxHeight: '100px', overflowY: 'auto' }}>{data.result}</div>
-      <Handle type="source" position="bottom" id="b" />
-    </div>
+    <GenericNode data={{ ...data, hasInput: true, hasOutput: true }}>
+      <div style={{ width: '100%', height: '200px' }}>
+        <Editor
+          height="200px"
+          defaultLanguage="sql"
+          defaultValue="SELECT * FROM csv_data LIMIT 10;"
+          onMount={(editor) => {
+            data.editorRef.current = editor;
+            handleEditorDidMount(editor);
+          }}
+          options={{
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            fontSize: 14,
+          }}
+        />
+      </div>
+      <button className="node-button" onClick={handleRunQuery}>Run Query</button>
+      {data.result && renderTable(data.result)}
+    </GenericNode>
   );
 };
 

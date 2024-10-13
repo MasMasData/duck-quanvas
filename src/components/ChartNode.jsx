@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { Handle } from 'reactflow';
+import GenericNode from './GenericNode';
 import Chart from 'chart.js/auto';
+import { useResizeObserver } from '@mantine/hooks';
 
 const ChartNode = ({ data }) => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
+  const [containerRef, rect] = useResizeObserver();
 
   useEffect(() => {
     if (data.chartData && chartRef.current) {
@@ -17,26 +19,55 @@ const ChartNode = ({ data }) => {
         data: data.chartData,
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               position: 'top',
+              labels: {
+                boxWidth: 20,
+                font: {
+                  size: 12
+                }
+              }
             },
             title: {
               display: true,
-              text: 'Query Result Chart'
+              text: 'Query Result Chart',
+              font: {
+                size: 16
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                maxRotation: 45,
+                minRotation: 45,
+                font: {
+                  size: 10
+                }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                font: {
+                  size: 10
+                }
+              }
             }
           }
         },
       });
     }
-  }, [data.chartData]);
+  }, [data.chartData, rect.width, rect.height]);
 
   return (
-    <div style={{ padding: '10px', border: '1px solid #ddd', borderRadius: '5px', background: 'white' }}>
-      <Handle type="target" position="top" id="a" />
-      <div>{data.label}</div>
-      <canvas ref={chartRef} style={{ width: '100%', height: '250px' }}></canvas>
-    </div>
+    <GenericNode data={{ ...data, hasInput: true, hasOutput: true }}>
+      <div ref={containerRef} style={{ width: '600px', height: '450px' }}>
+        <canvas ref={chartRef} style={{ width: '100%', height: '100%' }}></canvas>
+      </div>
+    </GenericNode>
   );
 };
 
